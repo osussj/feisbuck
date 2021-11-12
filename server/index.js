@@ -1,6 +1,6 @@
 const chalk = require("chalk");
 const cors = require("cors");
-const debug = require("debug")("series:server");
+const debug = require("debug")("SocialNetwork:server");
 const express = require("express");
 const morgan = require("morgan");
 const {
@@ -17,7 +17,7 @@ app.use(express.json());
 const initializeServer = (port) =>
   new Promise((resolve, reject) => {
     const server = app.listen(port, () => {
-      debug(chalk.blueBright(`Server is listening on port number: ${port}`));
+      debug(chalk.yellowBright(`Server is listening on port: ${port}`));
       resolve(server);
     });
 
@@ -30,11 +30,11 @@ const initializeServer = (port) =>
     });
 
     server.on("close", () => {
-      debug(chalk.blueBright("Server disconnected"));
+      debug(chalk.yellowBright("Server disconnected"));
     });
   });
 
-app.use("/users");
+app.use("/users", (req, res, next) => {});
 
 app.use(notFoundErrorHandler);
 app.use(generalErrorHandler);
