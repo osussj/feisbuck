@@ -35,7 +35,12 @@ const loginUser = async (req, res, next) => {
       next(error);
     } else {
       const token = jwt.sign(
-        { username, id: user.id },
+        {
+          username: user.username,
+          id: user.id,
+          friends: user.friends,
+          enemies: user.enemies,
+        },
         process.env.SECRET_HASH
       );
       res.json({ token });
