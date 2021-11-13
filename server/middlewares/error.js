@@ -10,7 +10,7 @@ const notFoundErrorHandler = (req, res) => {
 const generalErrorHandler = (error, req, res, next) => {
   debug("An error has occurred: ", error.message);
   if (error instanceof ValidationError) {
-    return res.status(error.statusCode).json(error);
+    return res.status(error.statusCode).json(error.message);
   }
   const message = error.code ? error.message : "General pete";
   res.status(error.code || 500).json({ error: message });

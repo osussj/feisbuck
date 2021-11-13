@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../../database/models/user");
-const { createUser, loginUser } = require("./userController");
+const { createUser, loginUser, updateUser } = require("./userController");
 
 jest.mock("../../database/models/user");
 jest.mock("bcrypt");
@@ -129,6 +129,52 @@ describe("Given a loginUser function", () => {
       await loginUser(req, res);
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
+    });
+  });
+});
+
+describe("Given updateUser", () => {
+  describe("When the user is found and edited without error", () => {
+    test("Then it should call the method json with the user info updated", async () => {
+      const user = {
+        name: "test",
+        username: "test",
+        id: "1234",
+      };
+      const req = {
+        userInfo: user,
+        body: user,
+      };
+
+      const res = {
+        json: jest.fn().mockResolvedValue(user),
+      };
+      User.findByIdAndUpdate = jest.fn().mockResolvedValue(user);
+      await updateUser(req, res);
+
+      expect(res.json).toHaveBeenCalledWith(user);
+    });
+  });
+  describe("When the user is found and edited with error", () => {
+    test("Then it should call next with the error", async () => {
+      const user = {
+        name: "test",
+        username: "test",
+        id: "1234",
+      };
+      const req = {
+        userInfo: user,
+        body: user,
+      };
+      const error = new Error("User not found");
+      const errorcode = 404;
+
+      const next = jest.fn().mockResolvedValue(error);
+      User.findByIdAndUpdate = jest.fn().mockResolvedValue(null);
+      await updateUser(req, null, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+      expect(next.mock.calls[0][0]).toHaveProperty("code", errorcode);
     });
   });
 });
