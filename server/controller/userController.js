@@ -48,4 +48,23 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-module.exports = { createUser, loginUser };
+const updateUser = async (req, res, next) => {
+  const { id } = req.userInfo;
+  try {
+    const user = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (user) {
+      res.json(user);
+    } else {
+      const error = new Error("User not found");
+      error.code = 404;
+      next(error);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createUser, loginUser, updateUser };
