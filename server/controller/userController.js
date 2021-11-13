@@ -66,5 +66,20 @@ const updateUser = async (req, res, next) => {
     next(error);
   }
 };
+const deleteUser = async (req, res, next) => {
+  const { id } = req.userInfo;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (user) {
+      res.json(user);
+    } else {
+      const error = new Error("User not found");
+      error.code = 404;
+      next(error);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
-module.exports = { createUser, loginUser, updateUser };
+module.exports = { createUser, loginUser, updateUser, deleteUser };
