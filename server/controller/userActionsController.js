@@ -6,6 +6,7 @@ const getUsers = async (req, res, next) => {
     res.json(users);
   } catch {
     const error = new Error("Error loading users");
+    error.code = 500;
     next(error);
   }
 };

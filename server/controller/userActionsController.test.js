@@ -27,11 +27,13 @@ describe("Given getUsers", () => {
     test("Then it should call json with the users", async () => {
       const next = jest.fn();
       const error = new Error("Error loading users");
+      const errorCode = 500;
       User.find = jest.fn().mockRejectedValue();
 
       await getUsers(null, null, next);
 
       expect(next).toHaveBeenCalledWith(error);
+      expect(next.mock.calls[0][0]).toHaveProperty("code", errorCode);
     });
   });
 });
