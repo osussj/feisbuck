@@ -134,21 +134,25 @@ describe("Given a loginUser function", () => {
 });
 
 describe("Given updateUser", () => {
+  let user;
+  let req;
+  beforeEach(() => {
+    user = {
+      name: "test",
+      username: "test",
+      id: "1234",
+    };
+    req = {
+      userInfo: user,
+      body: user,
+    };
+  });
   describe("When the user is found and edited without error", () => {
     test("Then it should call the method json with the user info updated", async () => {
-      const user = {
-        name: "test",
-        username: "test",
-        id: "1234",
-      };
-      const req = {
-        userInfo: user,
-        body: user,
-      };
-
       const res = {
         json: jest.fn().mockResolvedValue(user),
       };
+
       User.findByIdAndUpdate = jest.fn().mockResolvedValue(user);
       await updateUser(req, res);
 
@@ -157,15 +161,6 @@ describe("Given updateUser", () => {
   });
   describe("When the user is found and edited with error", () => {
     test("Then it should call next with the error", async () => {
-      const user = {
-        name: "test",
-        username: "test",
-        id: "1234",
-      };
-      const req = {
-        userInfo: user,
-        body: user,
-      };
       const error = new Error("User not found");
       const errorcode = 404;
 
@@ -175,6 +170,16 @@ describe("Given updateUser", () => {
 
       expect(next).toHaveBeenCalledWith(error);
       expect(next.mock.calls[0][0]).toHaveProperty("code", errorcode);
+    });
+  });
+  describe("When the user is found but the promise is rejected", () => {
+    test("Then it should call next with the error", async () => {
+      const next = jest.fn().mockResolvedValue();
+
+      User.findByIdAndUpdate = jest.fn().mockRejectedValue(user);
+      await updateUser(req, null, next);
+
+      expect(next).toHaveBeenCalled();
     });
   });
 });
