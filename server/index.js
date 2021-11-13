@@ -8,6 +8,7 @@ const {
   generalErrorHandler,
 } = require("./middlewares/error");
 const usersRoutes = require("./routes/usersRoutes");
+const socialRoutes = require("./routes/socialRoutes");
 
 const app = express();
 
@@ -36,6 +37,7 @@ const initializeServer = (port) =>
   });
 
 app.use("/users", usersRoutes);
+app.use("/social", socialRoutes);
 
 app.use(notFoundErrorHandler);
 app.use(generalErrorHandler);
