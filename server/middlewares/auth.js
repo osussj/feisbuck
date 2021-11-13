@@ -14,11 +14,11 @@ const auth = (req, res, next) => {
       next(error);
     } else {
       try {
-        const { id, username, name, friends, enemies } = jwt.verify(
+        const { id, username, name } = jwt.verify(
           token,
           process.env.SECRET_HASH
         );
-        req.userInfo = { id, username, name, friends, enemies };
+        req.userInfo = { id, username, name };
         next();
       } catch {
         const error = new Error("Verify error");
