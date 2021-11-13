@@ -1,7 +1,12 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../../database/models/user");
-const { createUser, loginUser, updateUser } = require("./userController");
+const {
+  createUser,
+  loginUser,
+  updateUser,
+  deleteUser,
+} = require("./userController");
 
 jest.mock("../../database/models/user");
 jest.mock("bcrypt");
@@ -159,7 +164,7 @@ describe("Given updateUser", () => {
       expect(res.json).toHaveBeenCalledWith(user);
     });
   });
-  describe("When the user is found and edited with error", () => {
+  describe("When the user is not found", () => {
     test("Then it should call next with the error", async () => {
       const error = new Error("User not found");
       const errorcode = 404;
@@ -178,6 +183,55 @@ describe("Given updateUser", () => {
 
       User.findByIdAndUpdate = jest.fn().mockRejectedValue(user);
       await updateUser(req, null, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+});
+describe("Given deleteUser", () => {
+  let user;
+  let req;
+  beforeEach(() => {
+    user = {
+      name: "test",
+      username: "test",
+      id: "1234",
+    };
+    req = {
+      userInfo: user,
+      body: user,
+    };
+  });
+  describe("When the user is found and deleted without error", () => {
+    test("Then it should call the method json with the user deleted", async () => {
+      const res = {
+        json: jest.fn().mockResolvedValue(user),
+      };
+      User.findByIdAndDelete = jest.fn().mockResolvedValue(user);
+      await deleteUser(req, res);
+
+      expect(res.json).toHaveBeenCalledWith(user);
+    });
+  });
+  describe("When the user is not found", () => {
+    test("Then it should call next with the error", async () => {
+      const error = new Error("User not found");
+      const errorcode = 404;
+
+      const next = jest.fn().mockResolvedValue(error);
+      User.findByIdAndDelete = jest.fn().mockResolvedValue(null);
+      await deleteUser(req, null, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+      expect(next.mock.calls[0][0]).toHaveProperty("code", errorcode);
+    });
+  });
+  describe("When the user is found but the promise is rejected", () => {
+    test("Then it should call next with the error", async () => {
+      const next = jest.fn().mockResolvedValue();
+
+      User.findByIdAndDelete = jest.fn().mockRejectedValue(user);
+      await deleteUser(req, null, next);
 
       expect(next).toHaveBeenCalled();
     });
