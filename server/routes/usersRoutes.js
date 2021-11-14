@@ -18,7 +18,6 @@ router.post("/register", validate(userRegisterSchema), createUser);
 
 router.post("/login", validate(userLoginSchema), loginUser);
 
-// router.put("/profile", auth, validate(userRegisterSchema), updateUser);
 router.put("/profile/update", auth, updateUser);
 
 module.exports = router;
