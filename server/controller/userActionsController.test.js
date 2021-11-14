@@ -1,5 +1,5 @@
 const User = require("../../database/models/user");
-const { getUsers } = require("./userActionsController");
+const { getUsers, addFriend } = require("./userActionsController");
 
 jest.mock("../../database/models/user");
 describe("Given getUsers", () => {
@@ -36,4 +36,34 @@ describe("Given getUsers", () => {
       expect(next.mock.calls[0][0]).toHaveProperty("code", errorCode);
     });
   });
+});
+
+test("...", async () => {
+  const user = {
+    name: "guest",
+    username: "guest",
+    password: "guest",
+    id: "443",
+    save: jest.fn(),
+  };
+  const userInfo = {
+    user,
+  };
+  const id = "333";
+  const req = {
+    userInfo,
+    body: { id },
+  };
+  const result = {
+    added: "1234",
+  };
+  const res = {
+    json: jest.fn().mockResolvedValue(user),
+  };
+  User.findById = jest.fn().mockResolvedValue(user.id);
+  User.findOne = jest.fn().mockResolvedValue(user.username);
+
+  await addFriend(req, res);
+
+  expect(res.json).toHaveBeenCalledWith(result);
 });

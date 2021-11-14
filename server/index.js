@@ -11,6 +11,7 @@ const usersRoutes = require("./routes/usersRoutes");
 const socialRoutes = require("./routes/socialRoutes");
 
 const app = express();
+app.disable("x-powered-by");
 
 app.use(morgan("dev"));
 app.use(cors());
